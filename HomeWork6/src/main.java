@@ -1,31 +1,22 @@
+import java.util.Random;
+
 public class main {
+
+    public static final Random rd = new Random();
+    public static int way = 0 + rd.nextInt(1002 - 501) ;
+
+
     public static void main(String[] args) {
 
-        Cats cat1 = new Cats("Барсик");
-        Dogs dog1 = new Dogs("Шарик");
+        Animal[] listAnimals = {new Cats("Барсик"), new Dogs("Шарик"), new Cats("Молли"),
+                new Dogs ("Бобик"), new Dogs ("Салли")} ;
 
-        Cats cat2 = new Cats("Молли");
-        Dogs dog2 = new Dogs("Бобик");
 
-        cat1.run(201);
-        cat1.swim(30);
-
-        System.out.println();
-
-        dog1.run(50);
-        dog1.swim(9);
-
-        System.out.println();
-
-        cat2.run(15);
-        cat2.swim(10);
-
-        System.out.println();
-
-        dog2.run(500);
-        dog2.swim(12);
-
-        System.out.println();
+        for (int i = 0; i < listAnimals.length; i++) {
+            listAnimals[i].run(way);
+            listAnimals[i].swim(way);
+            System.out.println();
+    }
 
         Animal.countInfo();
         Cats.countInfo();
