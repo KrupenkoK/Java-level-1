@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
@@ -14,7 +16,6 @@ public class Map extends JPanel {
     public static final int PLAYER_2 = 2;
 
 
-
     int[][] field;
     int fieldSizeX;
     int fieldSizeY;
@@ -24,6 +25,7 @@ public class Map extends JPanel {
     int cellWidth;
     int cellX;
     int cellY;
+    boolean playersTurn = true;
 
     boolean isInitialized = false;
 
@@ -43,35 +45,11 @@ public class Map extends JPanel {
         cellY = e.getY() / cellHeight;
         System.out.println("x: " + cellX + " y: " + cellY);
         if (mode == MODE_H_V_A) {
-            checkingWinner();
+            playerVSBot();
+        }else {
+            playerVSPlayer2();
         }
         repaint();
-    }
-
-    //Ход игрока
-    public void playerTurn() {
-        int x;
-        int y;
-        do {
-            x = cellX;
-            y = cellY;
-        } while (!checkTurns(y, x));
-        enterSymbols(x, y, PLAYER_1);
-        System.out.println(PLAYER_1 + " сhose cordinate " + x + " " + y);
-    }
-
-
-    void checkingWinner() {
-        playerTurn();
-        if (checkWin(PLAYER_1)) {
-            System.out.println("You win!");
-        } else if (fullField());
-            botTurn();
-            if (checkWin(PLAYER_2)) {
-                System.out.println("Bot win!");
-            } else if (fullField());
-
-
     }
 
 
@@ -146,6 +124,10 @@ public class Map extends JPanel {
         }
     }
 
+    void gameOver() {
+        System.out.println("Game Over!");
+    }
+
     //Проверка поля на заполнения
     private boolean fullField() {
         for (int i=0; i<fieldSizeY; i++) {
@@ -162,13 +144,68 @@ public class Map extends JPanel {
     boolean checkTurns(int y, int x) {
         if (x<0 || x >=fieldSizeX || y<0 || y>=fieldSizeY) return false;
         else if (!(field[y][x]==EMPTY)) return false;
-
         return true;
     }
 
     //Выбираем клетку
     void enterSymbols(int y, int x, int player) {
         field[y][x] = player;
+    }
+
+
+    //Ход первого игрока
+    public void playerTurn() {
+        int x;
+        int y;
+        if (mode == MODE_H_V_A) {
+            do {
+                x = cellX;
+                y = cellY;
+            } while (!checkTurns(x, y));
+            enterSymbols(x, y, PLAYER_1);
+            System.out.println("First Player" + " сhose cordinate " + x + " " + y);
+        } else {
+            do {
+                x = cellX;
+                y = cellY;
+            } while (!checkTurns(x, y));
+            if (playersTurn == true) {
+                enterSymbols(x, y, PLAYER_1);
+                playersTurn = false;
+                System.out.println("First Player" + " сhose cordinate " + x + " " + y);
+            } else {
+                enterSymbols(x, y, PLAYER_2);
+                playersTurn = true;
+                System.out.println("Second Player" + " сhose cordinate " + x + " " + y);
+            }
+        }
+
+    }
+
+
+    void playerVSPlayer2() {
+        playerTurn();
+        if (checkWin(PLAYER_1)) {
+            System.out.println("First player win!");
+            gameOver();
+        } else if (checkWin(PLAYER_2)) {
+            System.out.println("Second player win!");
+            gameOver();
+        }
+    }
+
+
+    void playerVSBot() {
+        playerTurn();
+        if (checkWin(PLAYER_1)) {
+            System.out.println("You win!");
+            gameOver();
+        } else if (fullField());
+        botTurn();
+        if (checkWin(PLAYER_2)) {
+            System.out.println("Bot win!");
+            gameOver();
+        } else if (fullField());
     }
 
 
@@ -238,7 +275,7 @@ public class Map extends JPanel {
         do {
             y = rd.nextInt(fieldSizeY);
             x = rd.nextInt(fieldSizeX);
-        } while (!checkMove(y,x));
+        } while (!checkMove(x,y));
         enterSymbols(x, y, PLAYER_2);
         System.out.println(PLAYER_2 + " chose x: " + x + " Y: " + y);
     }
@@ -351,6 +388,5 @@ public class Map extends JPanel {
         }
         return count;
     }
-
 
 }
